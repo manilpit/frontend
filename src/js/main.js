@@ -51,6 +51,10 @@ $(document).ready(function() {
         mmooc.menu.showCourseMenu(courseId, '', mmooc.util.getPageTitleBeforeColon());
     });
 
+    mmooc.routes.addRouteForPath(/\/groups$/, function() {
+        
+    });
+
     mmooc.routes.addRouteForPath(/\/groups\/\d+$/, function() {
         var courseId = mmooc.api.getCurrentCourseId();
         mmooc.menu.showCourseMenu(courseId, 'Grupper', mmooc.util.getPageTitleBeforeColon());

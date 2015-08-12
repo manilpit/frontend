@@ -274,6 +274,16 @@ this.mmooc.api = function() {
         },
 
 
+        getGroupsForUser: function(callback, error) {
+            this._get({
+                "callback": callback,
+                "error":    error,
+                "uri":      "/users/self/groups?context_type=Account",
+                "params":   { }
+            });
+        },
+
+
         createGroup: function(params, callback, error) {
             this._post({
                 "callback": callback,
