@@ -235,12 +235,6 @@ jQuery(function($) {
     }
 
     try {
-		mmooc.nrk.init();
-    } catch (e) {
-        console.log(e);
-    }
-
-    try {
         mmooc.menu.injectGroupsPage();
         mmooc.groups.changeGroupListURLs(document.location.href);
 
