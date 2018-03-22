@@ -165,6 +165,7 @@ jQuery(function($) {
         mmooc.pages.modifyMarkAsDoneButton();
         mmooc.pages.duplicateMarkedAsDoneButton();
         mmooc.util.callWhenElementIsPresent(".sikt-diploma-button", mmooc.greeting.enableGreetingButtonIfNecessary);
+        mmooc.util.callWhenElementIsPresent(".new-sikt-diploma-button", mmooc.greeting.enableNewGreetingButtonIfNecessary);
         // mmooc.pages.changeTranslations();
     });
     
@@ -204,6 +205,7 @@ jQuery(function($) {
     mmooc.routes.addRouteForPath([/\/pages/], function() {
         mmooc.pages.showBackLinkIfNecessary();
         mmooc.util.callWhenElementIsPresent(".sikt-diploma-button", mmooc.greeting.enableGreetingButtonIfNecessary);
+        mmooc.util.callWhenElementIsPresent(".new-sikt-diploma-button", mmooc.greeting.enableNewGreetingButtonIfNecessary);
     });
 
     mmooc.routes.addRouteForPath([/\/login\/canvas/], function() {
