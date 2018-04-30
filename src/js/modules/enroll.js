@@ -73,28 +73,30 @@ this.mmooc.enroll = function() {
             }
             else
             {
-                this.hideEnrollInformationPolicy();
                 if(this.isSelfEnrollmentPage()) {
+                    this.hideEnrollInformationPolicy();
                     //When self enrolling, give the user the impression of registering on the platform, and not on the course
                     //we use to make self enrollment possible. See settings.js/selfRegisterCourseCode
                     this.getEnrollInformationElement().text("");
                     $("#enroll_form > p:nth-child(2)").text("Vennligst fyll inn informasjonen nedenfor for å registrere deg på " + mmooc.settings.platformName);
-                    this.selectRegisterUserCheckbox();
+//                    this.selectRegisterUserCheckbox();
                     this.updatePrivacyPolicyLinks();
                     this.changeEnrollButton();            
                 }
                 else
                 {
-                    this.hideEnrollButton();   
-                    this.changeEnrollInformation("Du registrere deg på ", "Vi registrerer deg på " + mmooc.i18n.CourseDefinite.toLowerCase() + " ");
-                    var enrollInformationElement = this.getEnrollInformationElement();         
-                    enrollInformationElement.html(" <span class='loading-gif'></span>");
-                    var enrollAction = this.getEnrollAction();
-                    mmooc.api.enrollUser(enrollAction, function(data) {
-                        $(".loading-gif").remove();
-                        window.location.href = "/search/all_courses";
-                    });
+//                    this.hideEnrollButton();   
+                    this.changeEnrollInformation("Du registrere deg på ", "Du registrerer deg på " + mmooc.i18n.CourseDefinite.toLowerCase() + " ");
+//                    var enrollInformationElement = this.getEnrollInformationElement();         
+//                    enrollInformationElement.html(" <span class='loading-gif'></span>");
+//                    var enrollAction = this.getEnrollAction();
+//                    mmooc.api.enrollUser(enrollAction, function(data) {
+//                        $(".loading-gif").remove();
+//                        window.location.href = "/search/all_courses";
+//                    });
+                    $("#enroll_form > div > div > div.ic-Self-enrollment-footer__Secondary > a").attr("href", mmooc.settings.privacyPolicyLink);
                 }
+                
             }
         },
         printAllCoursesContainer: function() {

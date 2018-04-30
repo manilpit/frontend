@@ -11,7 +11,8 @@ body.ic-Login-Body, .body--login-confirmation {
             background-repeat: no-repeat;
             width: @logo-width;
             height: @logo-height;
-            
+            -webkit-flex: 0 0 260px;
+            flex: 0 0 260px;            
             img {
                 display: none;
             }
@@ -36,6 +37,7 @@ body.ic-Login-Body, .body--login-confirmation {
         }
         .ic-Login-confirmation__header {
             background: @darkTealColor url(@logo-image) 18px no-repeat !important;
+            background-size: contain!important;
             padding: 30px;
             img {
                 display: none;

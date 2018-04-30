@@ -8,6 +8,6 @@ this.mmooc.settings = {
     'disablePeerReviewButton' : false,
     'removeGlobalGradesLink' : true,
     'removeGroupsLink' : true,
-    'privacyPolicyLink' : 'http://matematikk-mooc.github.io/privacypolicy.html',
-    'platformName' : 'matematikk.mooc.no'
+    'privacyPolicyLink' : 'http://kurs-iktsenteret.github.io/privacypolicy.html',
+    'platformName' : 'kurs.udir.no'
 };
