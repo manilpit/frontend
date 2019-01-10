@@ -6,8 +6,8 @@ this.mmooc.settings = {
     'useCanvaBadge' : false,
     'defaultNumberOfReviews' : 2, // Default number of peer reviews per student in power function
     'disablePeerReviewButton' : false,
-    'removeGlobalGradesLink' : true,
+    'removeGlobalGradesLink' : false,
     'removeGroupsLink' : true,
-    'privacyPolicyLink' : 'http://kurs-iktsenteret.github.io/privacypolicy.html',
-    'platformName' : 'kurs.udir.no'
+    'privacyPolicyLink' : 'https://kurs-iktsenteret.github.io/privacypolicy.html',
+    'platformName' : 'kompetanse.udir.no'
 };

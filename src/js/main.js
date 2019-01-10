@@ -10,6 +10,7 @@ jQuery(function($) {
         if (document.location.search === "?mmpf") {
             mmooc.powerFunctions.show(parentId);
         } else {
+            //Kommentar
             window.location.href = "/courses";
         }
     });
