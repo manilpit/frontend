@@ -45,7 +45,7 @@ jQuery(function($) {
             window.location.href = "/search/all_courses";
         }
         else {
-            mmooc.menu.showCourseMenu(courseId, mmooc.i18n.Course + 'forside', null);
+            mmooc.menu.showCourseMenu(courseId, 'Forside', null);
             mmooc.coursePage.listModulesAndShowProgressBar();
             mmooc.announcements.printAnnouncementsUnreadCount();
             mmooc.coursePage.replaceUpcomingInSidebar();
