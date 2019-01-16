@@ -14,6 +14,10 @@ this.mmooc.enroll = function() {
             var headline = $(".ic-Login-confirmation__headline");
             headline.text(s);
         },
+        changeAcceptButton: function(s) {
+            var acceptButton = $("#enroll_form > div > div > div.ic-Self-enrollment-footer__Primary > button");
+            acceptButton.text(s);
+        },
         getEnrollInformationElement: function() {
             //There might be several p elements, depending on which self registration screen we are on.
             //Only return the first one.
@@ -87,6 +91,8 @@ this.mmooc.enroll = function() {
                 {
 //                    this.hideEnrollButton();   
                     this.changeEnrollInformation("Du registrere deg på ", "Du registrerer deg på " + mmooc.i18n.CourseDefinite.toLowerCase() + " ");
+                    this.changeAcceptButton("Fullfør påmeldingen");
+
 //                    var enrollInformationElement = this.getEnrollInformationElement();         
 //                    enrollInformationElement.html(" <span class='loading-gif'></span>");
 //                    var enrollAction = this.getEnrollAction();
