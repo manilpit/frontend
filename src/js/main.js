@@ -1,4 +1,6 @@
 jQuery(function($) {
+  //Multilanguage KURSP-279 Css must be present before javascript is run.
+  mmooc.multilanguage.insertCss();
 
   mmooc.routes.addRouteForPath(/\/$/, function() {
     var parentId = 'wrapper';
@@ -14,6 +16,7 @@ jQuery(function($) {
 
   mmooc.routes.addRouteForPath(/\/login\/canvas$/, function() {
     mmooc.utilRoot.redirectFeideAuthIfEnrollReferrer();
+    mmooc.utilRoot.triggerForgotPasswordIfParamPassed();
   });
 
   mmooc.routes.addRouteForPath(/\/login$/, function() {
@@ -284,12 +287,11 @@ jQuery(function($) {
     ],
     function() {
       mmooc.menu.showDiscussionGroupMenu();
+      const courseId = mmooc.api.getCurrentCourseId();
 
       //20180911ETH Need to know if I got here from the discussion list or from the module
       //            navigation.
       if (!this.hasQueryString) {
-        var courseId = mmooc.api.getCurrentCourseId();
-
         //If courseId was found, it is a group discussion created by a teacher.
         if (courseId) {
           mmooc.menu.showBackButton(
@@ -489,10 +491,11 @@ jQuery(function($) {
         $("#fylke-statistikk").length) {
       const error = error => console.error('error calling api', error);
       mmooc.api.getUserGroupsForCourse(courseId, function(groups) {
-        mmooc.kpas.showInfo(groups);
+        var isTeacherOrAdmin = mmooc.util.isTeacherOrAdmin();
+        mmooc.kpas.showInfo(isTeacherOrAdmin, groups);
         var groupsInfo = mmooc.util.getGroupsInfo(groups);
-        mmooc.kpas.createMunicipalityDiagram(courseId, groupsInfo);
-        mmooc.kpas.createCountyDiagram(courseId, groupsInfo);
+        mmooc.kpas.createDiagram("kommune-statistikk", isTeacherOrAdmin, courseId, groupsInfo);
+        mmooc.kpas.createDiagram("fylke-statistikk", isTeacherOrAdmin, courseId, groupsInfo);
       }, error);
     }
   });
@@ -577,12 +580,4 @@ jQuery(function($) {
   }
 
   $("#application").show();
-
-  try {
-    // Call multilanguage.perform() last to catch all relevant DOM content
-    mmooc.multilanguage.insertCss();
-    mmooc.multilanguage.perform();
-  } catch (e) {
-    console.log(e);
-  }
 });

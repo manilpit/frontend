@@ -1,3 +1,10 @@
+var courseId = null;
+var resizeDebounce = null;
+const sortParam = {
+    sortDirection: "ascending",
+    sortField: "name"
+};
+
 function createDiagram(...options) {
     const [
         htmlElementId, data, column1name, column2name, previousSort
@@ -187,6 +194,7 @@ function createDiagram(...options) {
         .append("tr")
         .attr("style", d => `transform: translate3d(0,0px,0)`);
 
+        
     const tooltip = container.append("div")
         .attr("id", "table-tooltip")
         .attr("class", "table-tooltip")
@@ -204,16 +212,31 @@ function createDiagram(...options) {
         .attr("style", () => `background-size: ${cellWidth}px 100%`)
         .append("div")
         .attr("class", "bar")
-        .attr("aria-label", d => `Prosentkategori: ${getPercentageRange(d.enrollment_percentage_category - 1)}`)
-        .attr("style", d => `width: ${cellWidth * d.enrollment_percentage_category}px;`)
+        .attr("aria-label", function(d,i) {
+            if(d.enrollment_percentage_category < 99) {
+                return `Prosentkategori: ${getPercentageRange(d.enrollment_percentage_category - 1)}`
+            }
+            return `Dataene er skjult grunnet personvernhensyn.`;
+        }) 
+        .attr("style", function(d,i) {
+            if(d.enrollment_percentage_category < 99) {
+                return `width: ${cellWidth * d.enrollment_percentage_category}px;`;
+            }
+            return `background: #6d889d; border-radius: 50%; width: 10px; height: 10px;`;
+        })
         .on("mouseover", function (event, d) {
             d3.select(this).attr("aria-describedby", "table-tooltip");
             tooltip.transition()
                 .duration(200)
                 .style("opacity", 1);
-            tooltip.html(`Prosentkategori: ${getPercentageRange(d.enrollment_percentage_category - 1)}`)
-                .style("left", (event.pageX) + "px")
-                .style("top", (event.pageY - 40) + "px");
+            if(d.enrollment_percentage_category < 99) {
+                tooltipText = `Prosentkategori: ${getPercentageRange(d.enrollment_percentage_category - 1)}`;
+            } else {
+                tooltipText = "Dataene er skjult grunnet personvernhensyn."
+            }
+            tooltip.html(tooltipText)
+            .style("left", (event.pageX) + "px")
+            .style("top", (event.pageY - 40) + "px");
         })
         .on("mouseout", function () {
             d3.select(this).attr("aria-describedby", null);
@@ -250,7 +273,6 @@ function createDiagram(...options) {
     };
 
     // Debounce resize so we don't redraw on each event, but when finished resizing
-    let resizeDebounce;
     const resizeDebouneFn = function () {
         clearTimeout(resizeDebounce);
         resizeDebounce = setTimeout(handleResize, 100);
@@ -296,43 +318,78 @@ function urlParamsToObject() {
     return parse_query_string(search);
 }
 
+function loadMunicipalityGraphic(courseId, municipalityId) {
+    document.getElementById("graphic-name").innerHTML = "<span class='loading-gif'></span>";
+    d3.json("https://statistics-api.azurewebsites.net/api/statistics/primary_schools/municipality/" + municipalityId + "/course/" + courseId)
+    .then((result) => {
+        document.getElementById("graphic-name").innerHTML = result.Result[0].municipality_name;
+        const data = result.Result[0].schools;
+        createDiagram("#graphic", data, "Skole", "Prosentkategori", sortParam);
+    })
+    .catch((error) => {
+        if (error) {
+            document.getElementById("graphic-name").innerHTML = error.message;
+        }
+    });
+}
+function loadCountyGraphic(courseId, countyId) {
+    document.getElementById("graphic-name").innerHTML = "<span class='loading-gif'></span>";
+    d3.json("https://statistics-api.azurewebsites.net/api/statistics/primary_schools/county/" + countyId + "/course/" + courseId)
+    .then((result) => {
+        document.getElementById("graphic-name").innerHTML = result.Result[0].county_name;
+        const data = result.Result[0].municipalities;
+        createDiagram("#graphic", data, "Kommune", "Prosentkategori", sortParam);
+    })
+    .catch((error) => {
+        if (error) {
+            document.getElementById("graphic-name").innerHTML = error.message;
+        }
+    });
+}
+
+function updateCountyGraphic() {
+    var countyId = document.getElementById("fylke").value;
+    if(countyId == "") {
+        document.getElementById("graphic-name").innerHTML = "Vennligst oppgi et fylkesnummer.";
+        return;
+    }
+    clearTimeout(resizeDebounce);
+    d3.select("#table-tooltip").remove();
+    d3.select(".table-kpas").remove();
+    loadCountyGraphic(courseId, countyId);
+}
+function updateMunicipalityGraphic() {
+    var municipalityId = document.getElementById("kommune").value;
+    if(municipalityId == "") {
+        document.getElementById("graphic-name").innerHTML = "Vennligst oppgi et kommunenummer.";
+        return;
+    }
+    clearTimeout(resizeDebounce);
+    d3.select("#table-tooltip").remove();
+    d3.select(".table-kpas").remove();
+    loadMunicipalityGraphic(courseId, municipalityId)
+}
+
 function loadGraphic() {
     const urlParamsObj = urlParamsToObject();
     const municipalityId = urlParamsObj && urlParamsObj['municipalityId'];
     const countyId = urlParamsObj && urlParamsObj['countyId'];
-    const courseId = urlParamsObj && urlParamsObj['courseId'];
-    const sortParam = {
-        sortDirection: "ascending",
-        sortField: "name"
-    };
+    //Course id is defined on global scope such that it is available for the update functions above.
+    courseId = urlParamsObj && urlParamsObj['courseId'];
+    const show = urlParamsObj && urlParamsObj['show'];
 
-    if(courseId !== undefined) {
-        document.getElementById("graphic-name").innerHTML = "<span class='loading-gif'></span>";
+    if(show) {
+        if(show == "kommune-statistikk") {
+            document.getElementById("kommuneValg").style.display = "block";
+        } else if (show == "fylke-statistikk") {
+            document.getElementById("fylkeValg").style.display = "block";
+        }
+    } else if(courseId !== undefined) {
         if (municipalityId !== undefined) {
-            d3.json("https://statistics-api.azurewebsites.net/api/statistics/primary_schools/municipality/" + municipalityId + "/course/" + courseId)
-                .then((result) => {
-                    document.getElementById("graphic-name").innerHTML = result.Result[0].municipality_name;
-                    const data = result.Result[0].schools;
-                    createDiagram("#graphic", data, "Skole", "Prosentkategori", sortParam);
-                })
-                .catch((error) => {
-                    if (error) {
-                        throw error;
-                    }
-                });
+            loadMunicipalityGraphic(courseId, municipalityId);            
         }
         else if(countyId !== undefined) {
-            d3.json("https://statistics-api.azurewebsites.net/api/statistics/primary_schools/county/" + countyId + "/course/" + courseId)
-                .then((result) => {
-                    document.getElementById("graphic-name").innerHTML = result.Result[0].county_name;
-                    const data = result.Result[0].municipalities;
-                    createDiagram("#graphic", data, "Kommune", "Prosentkategori", sortParam);
-                })
-                .catch((error) => {
-                    if (error) {
-                        throw error;
-                    }
-                });
+            loadCountyGraphic(courseId, countyId)
         }
     }
 }
