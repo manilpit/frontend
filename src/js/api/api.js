@@ -141,17 +141,27 @@ this.mmooc.api = (function() {
     },
 
     getCurrentTypeAndContentId() {
-      const regexp = /\/courses\/\d+\/\w+\/\d+/;
+      const contentElementRegexp = /\/courses\/\d+\/\w+\/\d+/;
+      const isContentRegexp = /\/courses\/\d+\/\w+\/\.*/;
 
-      if (regexp.test('' + this._location.pathname)) {
+      var type = null;
+      var contentId = null;
+
+      if (isContentRegexp.test('' + this._location.pathname)) {
         const tmp = this._location.pathname.split('/');
-        if (tmp.length >= 5) {
-          const type = _urlToTypeMapping[tmp[3]];
-          const contentId = parseInt(tmp[4], 10);
-          return { contentId: contentId, type: type };
+        if (tmp.length >= 4) {
+          type = _urlToTypeMapping[tmp[3]];
         }
       }
-      return null;
+
+      if (contentElementRegexp.test('' + this._location.pathname)) {
+        const tmp = this._location.pathname.split('/');
+        if (tmp.length >= 5) {
+          contentId = parseInt(tmp[4], 10);
+        }
+      }
+
+      return { contentId: contentId, type: type };
     },
 
     getAllCourses(callback, error) {
@@ -697,19 +707,16 @@ body: test
       });
     },
     getUserGroupsForCourse(courseId, callback, error) {
-      this.getUserGroups(
-        (function(courseId) {
-          return groups => {
-            let usersGroups = [];
-            for (let i = 0; i < groups.length; i++) {
-              const group = groups[i];
-              if (group.course_id == courseId) {
-                usersGroups.push(group);
-              }
+      this.getUserGroups(groups => {
+          let usersGroups = [];
+          for (let i = 0; i < groups.length; i++) {
+            const group = groups[i];
+            if (group.course_id == courseId) {
+              usersGroups.push(group);
             }
-            callback(usersGroups);
-          };
-        })(courseId)
+          }
+          callback(usersGroups);
+        }
       );
     },
 
